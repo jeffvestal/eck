@@ -16,8 +16,8 @@ spec:
       # this allows ES to run on nodes even if their vm.max_map_count has not been increased, at a performance cost
       node.store.allow_mmap: false
       # uncomment the lines below to use the zone attribute from the node labels
-      #cluster.routing.allocation.awareness.attributes: k8s_node_name,zone
-      #node.attr.zone: ${ZONE}
+      cluster.routing.allocation.awareness.attributes: k8s_node_name,zone
+      node.attr.zone: ${ZONE}
     podTemplate:
       metadata:
         labels:
@@ -46,10 +46,10 @@ spec:
           env:
           # uncomment the lines below to make the topology.kubernetes.io/zone annotation available as an environment variable and
           # use it as a cluster routing allocation attribute.
-          #- name: ZONE
-          #  valueFrom:
-          #    fieldRef:
-          #      fieldPath: metadata.annotations['topology.kubernetes.io/zone']
+          - name: ZONE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.annotations['topology.kubernetes.io/zone']
           #- name: ES_JAVA_OPTS
           #  value: "-Xms2g -Xmx2g"
         #topologySpreadConstraints:
@@ -70,7 +70,7 @@ spec:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 2Gi
+            storage: 20Gi
         storageClassName: spinning-storage
   # # inject secure settings into Elasticsearch nodes from k8s secrets references
   # secureSettings:
@@ -95,15 +95,17 @@ spec:
   #     certificate:
   #       # provide your own certificate
   #       secretName: my-cert
+ #
+ #
+ #
   - name: data
     config:
-      # most Elasticsearch configuration parameters are possible to set, e.g: node.attr.attr_name: attr_value
       node.roles: ["data", "ingest", "ml"]
       # this allows ES to run on nodes even if their vm.max_map_count has not been increased, at a performance cost
       node.store.allow_mmap: false
       # uncomment the lines below to use the zone attribute from the node labels
-      #cluster.routing.allocation.awareness.attributes: k8s_node_name,zone
-      #node.attr.zone: ${ZONE}
+      cluster.routing.allocation.awareness.attributes: k8s_node_name,zone
+      node.attr.zone: ${ZONE}
     podTemplate:
       metadata:
         labels:
@@ -132,10 +134,10 @@ spec:
           env:
           # uncomment the lines below to make the topology.kubernetes.io/zone annotation available as an environment variable and
           # use it as a cluster routing allocation attribute.
-          #- name: ZONE
-          #  valueFrom:
-          #    fieldRef:
-          #      fieldPath: metadata.annotations['topology.kubernetes.io/zone']
+          - name: ZONE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.annotations['topology.kubernetes.io/zone']
           #- name: ES_JAVA_OPTS
           #  value: "-Xms2g -Xmx2g"
         #topologySpreadConstraints:
@@ -146,7 +148,7 @@ spec:
         #      matchLabels:
         #        elasticsearch.k8s.elastic.co/cluster-name: elasticsearch-sample
         #        elasticsearch.k8s.elastic.co/statefulset-name: elasticsearch-sample-es-default
-    count: 3
+    count: 2
     # request 2Gi of persistent data storage for pods in this topology element
     volumeClaimTemplates:
     - metadata:
@@ -156,7 +158,7 @@ spec:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 2Gi
+            storage: 20Gi
         storageClassName: local-storage
   # # inject secure settings into Elasticsearch nodes from k8s secrets references
   # secureSettings:
